@@ -103,3 +103,55 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+
+// 6. Lisans iletişim bağlantıları (cihaz farkındalığı + hazır mesaj şablonları)
+(function () {
+  var WA = "905055902343";
+  var MAIL = "beprehberim@gmail.com";
+  var ua = navigator.userAgent || "";
+  var isMobile = /Android|iPhone|iPad|iPod|Mobi|Windows Phone/i.test(ua) ||
+    (navigator.maxTouchPoints > 1 && window.innerWidth < 900);
+
+  document.documentElement.classList.add(isMobile ? "is-mobile" : "is-desktop");
+
+  var deviceLine = isMobile
+    ? "🖥️ Cihaz Kimliğim: (bilgisayarımdaki programdan kopyalayıp birazdan ileteceğim)"
+    : "🖥️ Cihaz Kimliğim (programdaki 'Lisans Al' penceresinde görünen BR-XXXX-XXXX kodu): ";
+
+  var MESSAGES = {
+    buy: "Merhaba, BEP Rehberim web sitenizden ulaşıyorum. Öğretmen lisansı (1 yıllık) satın almak istiyorum.\n\n👤 Adım Soyadım: \n🏫 Okulum (isteğe bağlı): \n" + deviceLine,
+    renew: "Merhaba, BEP Rehberim lisans süremi uzatmak istiyorum.\n\n👤 Adım Soyadım: \n" + deviceLine,
+    info: "Merhaba, BEP Rehberim hakkında bilgi almak istiyorum."
+  };
+
+  var SUBJECTS = {
+    buy: "BEP Rehberim Lisans Talebi",
+    renew: "BEP Rehberim Lisans Uzatma Talebi",
+    info: "BEP Rehberim Hakkında Bilgi"
+  };
+
+  function setupContactLinks() {
+    var waLinks = document.querySelectorAll("[data-wa-intent]");
+    for (var i = 0; i < waLinks.length; i++) {
+      var intent = waLinks[i].getAttribute("data-wa-intent");
+      if (MESSAGES[intent]) {
+        waLinks[i].href = "https://wa.me/" + WA + "?text=" + encodeURIComponent(MESSAGES[intent]);
+      }
+    }
+    var mailLinks = document.querySelectorAll("[data-mail-intent]");
+    for (var j = 0; j < mailLinks.length; j++) {
+      var mIntent = mailLinks[j].getAttribute("data-mail-intent");
+      if (MESSAGES[mIntent]) {
+        mailLinks[j].href = "mailto:" + MAIL +
+          "?subject=" + encodeURIComponent(SUBJECTS[mIntent]) +
+          "&body=" + encodeURIComponent(MESSAGES[mIntent].replace(/\n/g, "\r\n"));
+      }
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupContactLinks);
+  } else {
+    setupContactLinks();
+  }
+})();
